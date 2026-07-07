@@ -327,7 +327,7 @@ const Button = ({ children, variant = 'primary', onClick, className = '' }) => {
           </div>
 
           {/* Right Hamburger Action */}
-          <div className="pointer-events-auto flex items-center">
+          <div className="hidden-pointer-events-auto flex items-center">
             <button 
               onClick={() => setIsMenuOpen(true)}
               className={`flex items-center justify-center w-12 h-12 rounded-full border transition-all duration-500 backdrop-blur-xl ${
