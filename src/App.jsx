@@ -270,6 +270,7 @@ const Button = ({ children, variant = 'primary', onClick, className = '' }) => {
 
 const Header = ({ navigate, currentPage, isAppReady }) => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -277,84 +278,107 @@ const Header = ({ navigate, currentPage, isAppReady }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navItemClass = (page) => `relative px-5 py-2 text-sm font-medium transition-colors duration-300 capitalize rounded-full ${
-    currentPage === page ? 'text-white' : 'text-slate-400 hover:text-white'
-  }`;
-
   return (
-    <header className={`fixed top-0 w-full z-50 transition-all duration-[1200ms] delay-500 pt-6 ${
-      isAppReady ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
-    }`}>
-      {/* Changed to 100vw and 1% padding */}
-      <div className="w-[100vw] px-[1%] flex items-center justify-between pointer-events-none">
-        
-        {/* Insane Animated Logo */}
-        <div className="flex items-center gap-4 cursor-pointer pointer-events-auto group" onClick={() => navigate('home')}>
+    <>
+      <header className={`fixed top-0 w-full z-50 transition-all duration-[1200ms] delay-500 pt-6 ${
+        isAppReady ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
+      }`}>
+        <div className="w-[100vw] px-[1%] flex items-center justify-between pointer-events-none">
           
-          <div className="relative flex items-center justify-center w-12 h-12">
-            {/* Reactive Ambient Glow */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-orange-600/20 to-rose-500/20 rounded-full blur-md group-hover:scale-150 group-hover:opacity-100 opacity-70 transition-all duration-700 ease-out" />
+          {/* Insane Animated Logo */}
+          <div className="flex items-center gap-4 cursor-pointer pointer-events-auto group" onClick={() => navigate('home')}>
             
-            {/* Multi-layered Orbital Rings */}
-            <svg className="absolute w-full h-full" viewBox="0 0 100 100">
-              <defs>
-                <linearGradient id="orbit-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#f97316" />
-                  <stop offset="100%" stopColor="#f43f5e" />
-                </linearGradient>
-              </defs>
-              <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(249,115,22,0.1)" strokeWidth="1" />
+            <div className="relative flex items-center justify-center w-12 h-12">
+              {/* Reactive Ambient Glow */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-orange-600/20 to-rose-500/20 rounded-full blur-md group-hover:scale-150 group-hover:opacity-100 opacity-70 transition-all duration-700 ease-out" />
               
-              {/* Fast outer orbit */}
-              <circle cx="50" cy="50" r="45" fill="none" stroke="url(#orbit-grad)" strokeWidth="1.5" strokeDasharray="30 250" strokeLinecap="round" className="origin-center animate-[spin_3s_linear_infinite]" />
+              {/* Multi-layered Orbital Rings */}
+              <svg className="absolute w-full h-full" viewBox="0 0 100 100">
+                <defs>
+                  <linearGradient id="orbit-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#f97316" />
+                    <stop offset="100%" stopColor="#f43f5e" />
+                  </linearGradient>
+                </defs>
+                <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(249,115,22,0.1)" strokeWidth="1" />
+                
+                {/* Fast outer orbit */}
+                <circle cx="50" cy="50" r="45" fill="none" stroke="url(#orbit-grad)" strokeWidth="1.5" strokeDasharray="30 250" strokeLinecap="round" className="origin-center animate-[spin_3s_linear_infinite]" />
+                
+                {/* Slow counter-rotating inner orbit */}
+                <circle cx="50" cy="50" r="35" fill="none" stroke="#fbbf24" strokeWidth="1" strokeDasharray="40 180" strokeLinecap="round" className="origin-center animate-[spin_7s_linear_infinite_reverse]" />
+              </svg>
               
-              {/* Slow counter-rotating inner orbit */}
-              <circle cx="50" cy="50" r="35" fill="none" stroke="#fbbf24" strokeWidth="1" strokeDasharray="40 180" strokeLinecap="round" className="origin-center animate-[spin_7s_linear_infinite_reverse]" />
-            </svg>
-            
-            {/* Counter-Rotating Geometric Core */}
-            <div className="absolute w-5 h-5 flex items-center justify-center">
-              <div className="absolute inset-0 border-2 border-orange-500/80 rounded-[4px] origin-center animate-[spin_8s_linear_infinite] group-hover:border-orange-400 transition-colors" />
-              <div className="absolute inset-0 border-[1.5px] border-amber-400/80 rounded-[4px] rotate-45 origin-center animate-[spin_12s_linear_infinite_reverse] group-hover:border-amber-300 transition-colors" />
+              {/* Counter-Rotating Geometric Core */}
+              <div className="absolute w-5 h-5 flex items-center justify-center">
+                <div className="absolute inset-0 border-2 border-orange-500/80 rounded-[4px] origin-center animate-[spin_8s_linear_infinite] group-hover:border-orange-400 transition-colors" />
+                <div className="absolute inset-0 border-[1.5px] border-amber-400/80 rounded-[4px] rotate-45 origin-center animate-[spin_12s_linear_infinite_reverse] group-hover:border-amber-300 transition-colors" />
+              </div>
+
+              {/* Pulsing Quantum Center */}
+              <div className="absolute w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_12px_4px_rgba(249,115,22,0.8)] animate-pulse" />
             </div>
 
-            {/* Pulsing Quantum Center */}
-            <div className="absolute w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_12px_4px_rgba(249,115,22,0.8)] animate-pulse" />
+            {/* Upgraded Typography */}
+            <span className="text-2xl font-bold text-white tracking-tighter hidden sm:flex items-center gap-1 group-hover:text-orange-50 transition-colors duration-300" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>
+              Technimation
+              <span className="w-1.5 h-1.5 rounded-full bg-orange-500 mt-2 animate-pulse shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
+            </span>
           </div>
 
-          {/* Upgraded Typography */}
-          <span className="text-2xl font-bold text-white tracking-tighter hidden sm:flex items-center gap-1 group-hover:text-orange-50 transition-colors duration-300" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>
-            Technimation
-            <span className="w-1.5 h-1.5 rounded-full bg-orange-500 mt-2 animate-pulse shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
-          </span>
+          {/* Right Hamburger Action */}
+          <div className="pointer-events-auto flex items-center">
+            <button 
+              onClick={() => setIsMenuOpen(true)}
+              className={`flex items-center justify-center w-12 h-12 rounded-full border transition-all duration-500 backdrop-blur-xl ${
+                isScrolled ? 'bg-white/10 border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.5)]' : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
+              }`}
+            >
+              <Menu size={20} className="text-white" />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Fullscreen Overlay Menu */}
+      <div 
+        className={`fixed inset-0 z-[100] bg-[#020202]/95 backdrop-blur-2xl transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col justify-center items-center ${
+          isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+      >
+        {/* Close Button Container - matched to 1% header padding */}
+        <div className="absolute top-6 w-[100vw] px-[1%] flex justify-end">
+          <button 
+            onClick={() => setIsMenuOpen(false)}
+            className="flex items-center justify-center w-12 h-12 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all hover:rotate-90 duration-300"
+          >
+            <X size={20} />
+          </button>
         </div>
 
-        {/* Floating Glass Pill Navigation */}
-        <div className={`pointer-events-auto flex items-center gap-1 p-1.5 rounded-full border transition-all duration-500 backdrop-blur-xl ${
-          isScrolled ? 'bg-white/10 border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.5)]' : 'bg-white/5 border-white/10'
-        }`}>
-          {['home', 'services', 'industries', 'contact'].map((page) => (
-            <button 
-              key={page}
-              onClick={() => navigate(page)} 
-              className={navItemClass(page)}
-            >
-              <span className="relative z-10">{page}</span>
-              {currentPage === page && (
-                <div className="absolute inset-0 bg-white/10 rounded-full -z-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]" />
-              )}
-            </button>
+        {/* Menu Links with Staggered Reveal */}
+        <div className="flex flex-col items-center gap-8">
+          {['home', 'services', 'industries', 'contact'].map((page, i) => (
+            <div key={page} className="overflow-hidden p-2">
+              <button 
+                onClick={() => { 
+                  navigate(page); 
+                  setIsMenuOpen(false); 
+                }}
+                className="text-5xl md:text-7xl font-bold uppercase tracking-tighter text-white hover:text-orange-500 transition-colors block"
+                style={{
+                  fontFamily: '"Space Grotesk", sans-serif',
+                  transform: isMenuOpen ? 'translateY(0)' : 'translateY(100%)',
+                  transition: `transform 800ms cubic-bezier(0.16,1,0.3,1) ${isMenuOpen ? i * 100 + 200 : 0}ms`
+                }}
+              >
+                {page}
+              </button>
+            </div>
           ))}
         </div>
-
-        {/* Right Action */}
-        <div className="pointer-events-auto hidden sm:flex items-center">
-           <button onClick={() => navigate('contact')} className="text-sm font-medium text-white hover:text-orange-500 transition-colors uppercase tracking-widest px-4 py-2">
-             Get in touch
-           </button>
-        </div>
       </div>
-    </header>
+    </>
   );
 };
 
@@ -474,7 +498,6 @@ const HomePage = ({ navigate, isAppReady }) => {
       </div>
       
       {/* BASE LAYER (Ambient Blurred Text, Paragraph, Dynamic Buttons) */}
-      {/* Changed to 100vw and 3% padding */}
       <div className="relative z-30 w-[100vw] px-[3%] h-full flex flex-col justify-center pointer-events-none pt-20">
         
         {/* Center-aligned Grid for perfect overlap & crossfading */}
@@ -516,9 +539,9 @@ const HomePage = ({ navigate, isAppReady }) => {
                   {item.title}
                 </h1>
 
-                {/* 3. Paragraph - Stagger 3 */}
+                {/* 3. Paragraph - Stagger 3 - Explicitly Centered */}
                 <p 
-                  className={`text-slate-300 text-lg md:text-xl leading-relaxed font-light max-w-4xl mb-12 transition-all duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                  className={`text-slate-300 text-center mx-auto text-lg md:text-xl leading-relaxed font-light max-w-4xl mb-12 transition-all duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
                     isActive ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
                   }`}
                   style={{ transitionDelay: isActive ? '300ms' : '0ms' }}
@@ -551,7 +574,6 @@ const HomePage = ({ navigate, isAppReady }) => {
           maskImage: 'radial-gradient(circle 45vmax at var(--mouse-x) var(--mouse-y), black 0%, black 25%, transparent 85%)',
         }}
       >
-        {/* Changed to 100vw and 3% padding */}
         <div className="relative w-[100vw] px-[3%] h-full flex flex-col justify-center pt-20">
           <div className="grid place-items-center w-full">
             {HERO_DATA.map((item, i) => {
@@ -588,9 +610,9 @@ const HomePage = ({ navigate, isAppReady }) => {
                     {item.title}
                   </h1>
 
-                  {/* Invisible Paragraph Spacer */}
+                  {/* Invisible Paragraph Spacer - Explicitly Centered */}
                   <p 
-                    className={`text-lg md:text-xl leading-relaxed font-light max-w-4xl mb-12 opacity-0 transition-all duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                    className={`text-center mx-auto text-lg md:text-xl leading-relaxed font-light max-w-4xl mb-12 opacity-0 transition-all duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
                       isActive ? 'translate-y-0 scale-100' : 'translate-y-8 scale-95'
                     }`}
                     style={{ transitionDelay: isActive ? '300ms' : '0ms' }}
