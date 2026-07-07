@@ -17,7 +17,7 @@ const SERVICES = [
   { id: 'cybersecurity', title: 'Cybersecurity', icon: <Shield size={24} />, brief: 'Enterprise threat protection.' },
 ];
 
-// --- ADVANCED PRELOADER (Cinematic Shutter Reveal - No Jerk Version) ---
+// --- ADVANCED PRELOADER (Cinematic Shutter Reveal - Restored No Jerk 100vw) ---
 const Preloader = ({ onAppReady, onComplete }) => {
   const [displayProgress, setDisplayProgress] = useState(0);
   const [phase, setPhase] = useState('loading');
@@ -87,9 +87,8 @@ const Preloader = ({ onAppReady, onComplete }) => {
 
       /**
        * One single line:
-       * - during loading: starts at 0 and grows inside the 400px bar
-       * - after 100%: the same line expands left and right into the gate seam
-       * No extenders. No width-class switching. No snap.
+       * - during loading: starts at 0 and grows inside the 400px bar bounds
+       * - after 100%: seamlessly expands into the negative space to reach 100vw
        */
       rootRef.current.style.setProperty('--line-left', `${-leftGrow}px`);
       rootRef.current.style.setProperty(
@@ -198,9 +197,8 @@ const Preloader = ({ onAppReady, onComplete }) => {
           isOpening ? '-translate-y-full' : 'translate-y-0'
         }`}
       >
-        <div className="absolute bottom-0 left-0 w-full flex justify-center">
-          <div className="w-full max-w-[1400px] px-6 flex flex-col justify-end">
-
+        <div className="absolute bottom-0 left-0 w-full flex flex-col justify-end">
+          <div className="w-[100vw] px-[3%]">
             {/* Text Block */}
             <div
               className={`w-full max-w-[400px] transition-all duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
@@ -236,9 +234,8 @@ const Preloader = ({ onAppReady, onComplete }) => {
           isOpening ? 'translate-y-full' : 'translate-y-0'
         }`}
       >
-        <div className="absolute top-0 left-0 w-full flex justify-center">
-          <div className="w-full max-w-[1400px] px-6 flex flex-col justify-start">
-
+        <div className="absolute top-0 left-0 w-full flex flex-col justify-start">
+          <div className="w-[100vw] px-[3%]">
             {/* Bottom seam only becomes visible when gates actually open */}
             <ProgressSeam bottom />
           </div>
@@ -288,7 +285,8 @@ const Header = ({ navigate, currentPage, isAppReady }) => {
     <header className={`fixed top-0 w-full z-50 transition-all duration-[1200ms] delay-500 pt-6 ${
       isAppReady ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
     }`}>
-      <div className="max-w-[1400px] mx-auto px-6 flex items-center justify-between pointer-events-none">
+      {/* Changed to 100vw and 1% padding */}
+      <div className="w-[100vw] px-[1%] flex items-center justify-between pointer-events-none">
         
         {/* Insane Animated Logo */}
         <div className="flex items-center gap-4 cursor-pointer pointer-events-auto group" onClick={() => navigate('home')}>
@@ -476,7 +474,8 @@ const HomePage = ({ navigate, isAppReady }) => {
       </div>
       
       {/* BASE LAYER (Ambient Blurred Text, Paragraph, Dynamic Buttons) */}
-      <div className="relative z-30 w-full max-w-[1400px] mx-auto px-6 h-full flex flex-col justify-center pointer-events-none pt-20">
+      {/* Changed to 100vw and 3% padding */}
+      <div className="relative z-30 w-[100vw] px-[3%] h-full flex flex-col justify-center pointer-events-none pt-20">
         
         {/* Center-aligned Grid for perfect overlap & crossfading */}
         <div className="grid place-items-center w-full">
@@ -552,7 +551,8 @@ const HomePage = ({ navigate, isAppReady }) => {
           maskImage: 'radial-gradient(circle 45vmax at var(--mouse-x) var(--mouse-y), black 0%, black 25%, transparent 85%)',
         }}
       >
-        <div className="relative w-full max-w-[1400px] mx-auto px-6 h-full flex flex-col justify-center pt-20">
+        {/* Changed to 100vw and 3% padding */}
+        <div className="relative w-[100vw] px-[3%] h-full flex flex-col justify-center pt-20">
           <div className="grid place-items-center w-full">
             {HERO_DATA.map((item, i) => {
               const isActive = i === currentTextIndex;
@@ -640,7 +640,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="bg-black text-slate-300 min-h-screen font-sans selection:bg-orange-500 selection:text-white" style={{ fontFamily: '"Inter", sans-serif' }}>
+    <div className="bg-black text-slate-300 min-h-screen w-[100vw] overflow-x-hidden font-sans selection:bg-orange-500 selection:text-white" style={{ fontFamily: '"Inter", sans-serif' }}>
       <style>{`
         @keyframes amoeba-morph {
           0% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
@@ -680,7 +680,7 @@ export default function App() {
 
       <Header navigate={setCurrentPage} currentPage={currentPage} isAppReady={isAppReady} />
 
-      <main className="flex-grow">
+      <main className="flex-grow w-full">
         <HomePage navigate={setCurrentPage} isAppReady={isAppReady} />
       </main>
     </div>
