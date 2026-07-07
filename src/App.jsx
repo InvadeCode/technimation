@@ -268,7 +268,7 @@ const Button = ({ children, variant = 'primary', onClick, className = '' }) => {
   );
 };
 
-const Header = ({ navigate, currentPage, isAppReady }) => {
+/* const Header = ({ navigate, currentPage, isAppReady }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -276,7 +276,7 @@ const Header = ({ navigate, currentPage, isAppReady }) => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, []); */
 
   return (
     <>
