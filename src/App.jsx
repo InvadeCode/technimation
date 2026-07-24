@@ -2,18 +2,25 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Menu, X, Server, Shield, Cloud, Cpu, Activity, Layout, 
   Code, Zap, Database, Linkedin, CheckCircle2, Globe2,
-  ArrowRight
+  ArrowRight, MapPin, Phone, Mail, Building2, Briefcase, FileText
 } from 'lucide-react';
 
 const SERVICES = [
-  { id: 'engineering', title: 'Custom Engineering', icon: <Code size={20} />, brief: 'Bespoke enterprise software and scalable microservice architectures.' },
-  { id: 'infra', title: 'Managed Infra', icon: <Server size={20} />, brief: 'High-availability infrastructure provisioning and 24/7 management.' },
-  { id: 'cloud', title: 'Cloud Transformation', icon: <Cloud size={20} />, brief: 'Seamless migration and multi-cloud ecosystem optimization.' },
-  { id: 'consulting', title: 'IT Advisory', icon: <Activity size={20} />, brief: 'Strategic technology roadmaps aligning IT with business velocity.' },
-  { id: 'iot', title: 'IoT Integration', icon: <Cpu size={20} />, brief: 'Connecting physical device ecosystems securely to the cloud.' },
-  { id: 'interfaces', title: 'Digital Interfaces', icon: <Layout size={20} />, brief: 'High-end UI/UX engineering for complex enterprise portals.' },
-  { id: 'continuity', title: 'Continuity Planning', icon: <Zap size={20} />, brief: 'Disaster recovery and failover systems for mission-critical apps.' },
-  { id: 'cybersecurity', title: 'Zero-Trust Security', icon: <Shield size={20} />, brief: 'Enterprise threat protection, audits, and network sanitization.' },
+  { id: 'engineering', title: 'Custom Engineering', icon: <Code size={20} />, brief: 'Bespoke enterprise software and scalable microservice architectures.', desc: 'We architect and build full-cycle enterprise software, turning complex business requirements into agile, high-performance applications capable of scaling globally.' },
+  { id: 'infra', title: 'Managed Infra', icon: <Server size={20} />, brief: 'High-availability infrastructure provisioning and 24/7 management.', desc: 'End-to-end management of your physical and virtual infrastructure. We ensure 99.99% uptime, seamless provisioning, and proactive maintenance.' },
+  { id: 'cloud', title: 'Cloud Transformation', icon: <Cloud size={20} />, brief: 'Seamless migration and multi-cloud ecosystem optimization.', desc: 'Accelerate your transition to modern cloud architectures. We manage migrations, optimize multi-cloud deployments, and enforce cost-control governance.' },
+  { id: 'consulting', title: 'IT Advisory', icon: <Activity size={20} />, brief: 'Strategic technology roadmaps aligning IT with business velocity.', desc: 'Expert-led technology consulting that aligns your IT investments with core business objectives, identifying risk and mapping out scalable digital roadmaps.' },
+  { id: 'iot', title: 'IoT Integration', icon: <Cpu size={20} />, brief: 'Connecting physical device ecosystems securely to the cloud.', desc: 'Bridge the gap between hardware and software. We build secure, high-throughput IoT ecosystems that stream real-time data into your analytical pipelines.' },
+  { id: 'interfaces', title: 'Digital Interfaces', icon: <Layout size={20} />, brief: 'High-end UI/UX engineering for complex enterprise portals.', desc: 'Designing and engineering sophisticated digital interfaces that make complex data and workflows intuitive for enterprise users and end-consumers.' },
+  { id: 'continuity', title: 'Continuity Planning', icon: <Zap size={20} />, brief: 'Disaster recovery and failover systems for mission-critical apps.', desc: 'Bulletproof business continuity. We design failover architectures and automated disaster recovery protocols to keep your mission-critical systems online.' },
+  { id: 'cybersecurity', title: 'Zero-Trust Security', icon: <Shield size={20} />, brief: 'Enterprise threat protection, audits, and network sanitization.', desc: 'Implementing robust zero-trust security frameworks. We actively hunt threats, audit legacy systems, and sanitize networks against modern attack vectors.' },
+];
+
+const INDUSTRIES = [
+  { id: 'bfsi', title: 'BFSI', desc: 'Secure infrastructure and highly compliant data processing pipelines for financial institutions.' },
+  { id: 'healthcare', title: 'Healthcare', desc: 'HIPAA-compliant networks, EHR integrations, and high-availability patient data systems.' },
+  { id: 'manufacturing', title: 'Manufacturing', desc: 'Industrial IoT integration, supply chain analytics, and factory floor automation systems.' },
+  { id: 'retail', title: 'Retail & Logistics', desc: 'Real-time inventory databases, cloud-based POS infrastructure, and fleet tracking tech.' }
 ];
 
 const useInView = (options = { threshold: 0.15 }) => {
@@ -205,9 +212,22 @@ const Button = ({ children, variant = 'primary', onClick, className = '' }) => {
   );
 };
 
+// Memoized outside the component to prevent recreation on every hover render
+const MENU_DATA = {
+  company: [
+    { label: 'About Us', page: 'about' },
+    { label: 'Leadership', page: 'about' },
+    { label: 'Global Footprint', page: 'about' },
+    { label: 'Careers', page: 'contact' },
+  ],
+  services: SERVICES.map(s => ({ label: s.title, page: 'services' })),
+  industries: INDUSTRIES.map(i => ({ label: i.title, page: 'industries' })),
+};
+
 const Header = ({ navigate, currentPage, isAppReady }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeMenuSection, setActiveMenuSection] = useState('company');
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -215,45 +235,133 @@ const Header = ({ navigate, currentPage, isAppReady }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [isMenuOpen]);
+
+  const handleNav = (page) => {
+    setIsMenuOpen(false);
+    navigate(page);
+  };
+
   return (
     <>
       <header className={`fixed top-0 w-full z-50 transition-all duration-[1200ms] delay-500 ${
         isAppReady ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
-      } ${isScrolled ? 'pt-4' : 'pt-6'}`}>
+      } ${isScrolled && !isMenuOpen ? 'pt-4' : 'pt-6'}`}>
         
         <div className={`mx-auto flex items-center justify-between transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-          isScrolled ? 'w-[98%] bg-[#050505]/95 backdrop-blur-xl rounded-[9px] px-6 py-3 shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-white/5' : 'w-full px-[3%] py-2 border border-transparent'
+          isScrolled && !isMenuOpen ? 'w-[98%] bg-[#050505]/95 backdrop-blur-xl rounded-[9px] px-6 py-3 shadow-[0_10px_40px_rgba(0,0,0,0.5)] border border-white/5' : 'w-full px-[3%] py-2 border border-transparent'
         }`}>
-          <div className="group relative cursor-pointer flex items-center" onClick={() => navigate('home')}>
+          <div className="group relative cursor-pointer flex items-center z-[100]" onClick={() => handleNav('home')}>
             <span className="text-xl md:text-2xl font-normal text-white tracking-tighter" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>
               Technimation<span className="text-orange-500">.</span>
             </span>
             <span className="absolute -bottom-1 left-0 w-full h-[2px] bg-orange-500 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 ease-out" />
           </div>
-          <button onClick={() => setIsMenuOpen(true)} className="flex items-center justify-center w-10 h-10 text-white hover:text-orange-500 transition-colors">
-            <Menu size={20} />
-          </button>
+
+          <div className="flex items-center gap-6 z-[100]">
+             <Button variant="primary" className={`hidden md:flex !py-2 !px-6 text-sm !rounded-full transition-opacity duration-300 ${isMenuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={() => handleNav('contact')}>
+               Talk to an Expert
+             </Button>
+             
+             <button 
+               onClick={() => setIsMenuOpen(!isMenuOpen)} 
+               className="flex items-center gap-3 text-white hover:text-orange-500 transition-colors group"
+             >
+               <span className="font-mono text-sm tracking-widest uppercase hidden md:block w-12 text-right">
+                 {isMenuOpen ? 'Close' : 'Menu'}
+               </span>
+               <div className="relative w-10 h-10 rounded-full border border-white/20 flex items-center justify-center group-hover:border-orange-500/50 transition-colors bg-[#050505]">
+                 {isMenuOpen ? <X size={18} className="animate-in spin-in-90 duration-300" /> : <Menu size={18} />}
+               </div>
+             </button>
+          </div>
         </div>
       </header>
 
-      <div className={`fixed inset-0 z-[100] bg-[#020202]/95 backdrop-blur-3xl transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col justify-center items-center ${isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-        <div className="absolute top-6 w-[100vw] px-[1%] flex justify-end">
-          <button onClick={() => setIsMenuOpen(false)} className="flex items-center justify-center w-10 h-10 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all hover:rotate-90 duration-300">
-            <X size={18} />
-          </button>
-        </div>
-        <div className="flex flex-col items-center gap-6 md:gap-8">
-          {['home', 'services', 'industries', 'contact'].map((page, i) => (
-            <div key={page} className="overflow-hidden p-2">
-              <button 
-                onClick={() => { navigate(page); setIsMenuOpen(false); }}
-                className="text-4xl md:text-6xl font-bold uppercase tracking-tighter text-white hover:text-orange-500 transition-colors block"
-                style={{ fontFamily: '"Space Grotesk", sans-serif', transform: isMenuOpen ? 'translateY(0)' : 'translateY(100%)', transition: `transform 800ms cubic-bezier(0.16,1,0.3,1) ${isMenuOpen ? i * 100 + 200 : 0}ms` }}
-              >
-                {page}
-              </button>
+      {/* GPU Accelerated Menu Container */}
+      <div 
+        className={`fixed inset-0 w-full h-[100dvh] z-40 bg-[#020202] text-white flex flex-col overflow-hidden transform-gpu will-change-transform transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          isMenuOpen ? 'translate-y-0' : '-translate-y-full'
+        }`}
+      >
+        <div className="h-[80px] shrink-0 w-full border-b border-white/10" />
+
+        <div className="flex-1 flex flex-col md:flex-row w-full h-full min-h-0">
+          
+          <div className="w-full md:w-1/3 flex flex-col md:border-r border-white/10 h-full">
+            {['Company', 'Services', 'Industries'].map((item) => {
+              const key = item.toLowerCase();
+              const isActive = activeMenuSection === key;
+              return (
+                <div 
+                  key={item}
+                  onMouseEnter={() => setActiveMenuSection(key)}
+                  onClick={() => handleNav(key === 'company' ? 'about' : key)}
+                  className={`flex-1 flex items-center justify-between px-[10%] md:px-12 border-b border-white/10 cursor-pointer transition-all duration-300 group ${isActive ? 'bg-white/5' : 'hover:bg-white/5'}`}
+                >
+                  <span 
+                    className={`text-3xl md:text-5xl font-bold tracking-tight transition-colors duration-300 ${isActive ? 'text-orange-500' : 'text-neutral-400 group-hover:text-white'}`}
+                    style={{ fontFamily: '"Space Grotesk", sans-serif' }}
+                  >
+                    {item}
+                  </span>
+                  <ArrowRight size={24} className={`transition-all duration-300 ${isActive ? 'text-orange-500 translate-x-2' : 'text-neutral-600 group-hover:text-white'}`} />
+                </div>
+              );
+            })}
+            <div 
+              onClick={() => handleNav('contact')}
+              className="flex-1 flex items-center justify-between px-[10%] md:px-12 cursor-pointer transition-all duration-300 group hover:bg-white/5 border-b md:border-b-0 border-white/10"
+            >
+              <span className="text-3xl md:text-5xl font-bold tracking-tight text-neutral-400 group-hover:text-white transition-colors duration-300" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>
+                Contact
+              </span>
             </div>
-          ))}
+          </div>
+
+          <div className="w-full md:w-1/3 h-full flex flex-col justify-center px-[10%] md:px-16 py-8 md:border-r border-white/10 bg-[#050505]">
+            <div className="flex flex-col gap-4 md:gap-6 w-full justify-center">
+               {MENU_DATA[activeMenuSection].map((link, idx) => (
+                 <div 
+                   key={idx} 
+                   onClick={() => handleNav(link.page)}
+                   className="text-xl md:text-3xl text-neutral-400 hover:text-white cursor-pointer transition-colors w-max"
+                   style={{ fontFamily: '"Space Grotesk", sans-serif' }}
+                 >
+                   {link.label}
+                 </div>
+               ))}
+            </div>
+          </div>
+
+          <div className="hidden md:flex w-full md:w-1/3 h-full flex-col">
+            <div 
+              className="flex-1 flex flex-col items-center justify-center p-12 border-b border-white/10 group cursor-pointer hover:bg-white/5 transition-colors"
+              onClick={() => handleNav('contact')}
+            >
+               <Shield size={40} className="text-orange-500 mb-6" />
+               <h4 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Threat Assessment</h4>
+               <p className="text-neutral-500 text-sm mb-6">Schedule a zero-trust audit.</p>
+               <ArrowRight size={24} className="text-neutral-500 group-hover:text-white group-hover:translate-x-2 transition-all" />
+            </div>
+            <div 
+              className="flex-1 flex flex-col items-center justify-center p-12 group cursor-pointer hover:bg-white/5 transition-colors"
+              onClick={() => handleNav('contact')}
+            >
+               <Activity size={40} className="text-orange-500 mb-6" />
+               <h4 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Client Portal</h4>
+               <p className="text-neutral-500 text-sm mb-6">Access infrastructure dashboards.</p>
+               <ArrowRight size={24} className="text-neutral-500 group-hover:text-white group-hover:translate-x-2 transition-all" />
+            </div>
+          </div>
+
         </div>
       </div>
     </>
@@ -696,7 +804,7 @@ const PreFooterCTA = () => (
   </section>
 );
 
-const DetailedFooter = () => (
+const DetailedFooter = ({ navigate }) => (
   <footer className="w-full px-[1%] pt-24 pb-8 bg-[#020202] relative z-10">
     <div className="max-w-[1400px] mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-24 px-[2%]">
@@ -713,32 +821,273 @@ const DetailedFooter = () => (
         <div>
           <h4 className="text-white font-bold mb-6 tracking-widest uppercase text-sm font-mono">Capabilities</h4>
           <ul className="space-y-4 text-neutral-500">
-            {['Cloud Migration', 'Zero-Trust Security', 'Agentic AI', 'Disaster Recovery'].map(item => <li key={item} className="hover:text-orange-500 cursor-pointer transition-colors">{item}</li>)}
+            {['Cloud Migration', 'Zero-Trust Security', 'Agentic AI', 'Disaster Recovery'].map(item => (
+              <li key={item} onClick={() => navigate && navigate('services')} className="hover:text-orange-500 cursor-pointer transition-colors">{item}</li>
+            ))}
           </ul>
         </div>
         <div>
           <h4 className="text-white font-bold mb-6 tracking-widest uppercase text-sm font-mono">Company</h4>
           <ul className="space-y-4 text-neutral-500">
-            {['About Us', 'Case Studies', 'Careers', 'Contact'].map(item => <li key={item} className="hover:text-orange-500 cursor-pointer transition-colors">{item}</li>)}
+            {['About Us', 'Case Studies', 'Careers', 'Contact'].map(item => {
+              const route = item === 'About Us' ? 'about' : item === 'Case Studies' ? 'services' : item === 'Careers' ? 'about' : 'contact';
+              return <li key={item} onClick={() => navigate && navigate(route)} className="hover:text-orange-500 cursor-pointer transition-colors">{item}</li>
+            })}
           </ul>
         </div>
         <div>
           <h4 className="text-white font-bold mb-6 tracking-widest uppercase text-sm font-mono">Global HQ</h4>
-          <p className="text-neutral-500 mb-2">100 Tech Corridor, Suite 900</p>
-          <p className="text-neutral-500 mb-6">San Francisco, CA 94107</p>
-          <p className="text-neutral-500 font-mono text-sm hover:text-orange-500 cursor-pointer transition-colors">sys@technimation.io</p>
+          <p className="text-neutral-500 mb-2">C-329, City Plaza, Chakan</p>
+          <p className="text-neutral-500 mb-6">Pune, Maharashtra - 410501</p>
+          <p className="text-neutral-500 font-mono text-sm hover:text-orange-500 cursor-pointer transition-colors">+91 95618 25252</p>
         </div>
       </div>
       <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 px-[2%] text-neutral-600 text-xs font-mono uppercase tracking-widest font-bold">
         <p>© {new Date().getFullYear()} Technimation. All rights reserved.</p>
         <div className="flex gap-8">
           <span className="hover:text-white cursor-pointer transition-colors">Privacy Policy</span>
-          <span className="hover:text-white cursor-pointer transition-colors">Terms of Service</span>
+          <span className="hover:text-white cursor-pointer transition-colors">Secured by LiaisonIT</span>
         </div>
       </div>
     </div>
   </footer>
 );
+
+// --- NEW PAGES ---
+
+const PageHero = ({ title, subtitle }) => (
+  <section className="relative pt-40 pb-20 px-[3%] bg-[#020202] overflow-hidden border-b border-white/5">
+    <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.03] mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} />
+    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80vw] h-[40vw] max-w-[800px] bg-orange-600/10 blur-[100px] rounded-full pointer-events-none" />
+    
+    <div className="relative z-10 max-w-4xl mx-auto text-center">
+      <Reveal>
+        <div className="flex items-center justify-center gap-4 mb-6">
+          <span className="w-8 h-[1px] bg-orange-500" />
+          <span className="text-orange-500 font-mono text-xs tracking-[0.2em] uppercase font-bold">{subtitle}</span>
+          <span className="w-8 h-[1px] bg-orange-500" />
+        </div>
+        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tighter mb-8" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>
+          {title}
+        </h1>
+      </Reveal>
+    </div>
+  </section>
+);
+
+const AboutPage = () => {
+  return (
+    <div className="min-h-screen bg-[#020202]">
+      <PageHero subtitle="Who We Are" title="Architecting The Future of Enterprise Operations." />
+      
+      <section className="py-24 px-[3%]">
+        <div className="max-w-[1000px] mx-auto">
+          <Reveal>
+            <h3 className="text-2xl md:text-3xl font-light text-neutral-300 leading-relaxed mb-16" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>
+              Technimation Infomedia is a global technology consulting and engineering firm. We design, build, secure, and scale the mission-critical systems that ambitious businesses rely on to operate.
+            </h3>
+          </Reveal>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <Reveal delay={200} className="bg-[#050505] p-10 rounded-[1.5rem] border border-white/5">
+              <Building2 className="text-orange-500 mb-6" size={32} />
+              <h4 className="text-xl text-white font-bold mb-4" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Global Footprint</h4>
+              <p className="text-neutral-400 leading-relaxed">With strategic headquarters in Pune, India, and operations in Savannah, US, we deploy a unified global delivery model that ensures seamless communication, timezone coverage, and rapid execution.</p>
+            </Reveal>
+            
+            <Reveal delay={400} className="bg-[#050505] p-10 rounded-[1.5rem] border border-white/5">
+              <Briefcase className="text-orange-500 mb-6" size={32} />
+              <h4 className="text-xl text-white font-bold mb-4" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Enterprise Pedigree</h4>
+              <p className="text-neutral-400 leading-relaxed">Our leadership brings decades of combined experience managing complex IT infrastructures, billion-dollar budgets, and compliance-heavy technology architectures for global enterprises.</p>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-24 px-[3%] bg-[#050505] border-y border-white/5">
+        <div className="max-w-[1200px] mx-auto">
+          <SectionHeader subtitle="Leadership" title="Guided by Experience" />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <Reveal className="bg-[#020202] border border-white/5 p-8 md:p-12 rounded-[1.5rem]">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-16 h-16 bg-orange-500/10 rounded-full flex items-center justify-center border border-orange-500/30 text-orange-500 font-bold text-xl">AJ</div>
+                <div>
+                  <h3 className="text-2xl text-white font-bold" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Abhijit Junnarkar</h3>
+                  <p className="text-orange-500 font-mono text-xs tracking-widest uppercase">Technology Director</p>
+                </div>
+              </div>
+              <p className="text-neutral-400 leading-relaxed mb-6">Over 25 years of experience in US Healthcare Global Service Delivery, Technology Architecture, Cybersecurity Implementation, and Global IT Delivery. Abhijit specializes in translating complex business requirements into highly scalable, secure technical architectures.</p>
+              <div className="flex flex-wrap gap-2">
+                {['Cybersecurity', 'IT Infrastructure', 'Cloud Architecture'].map(tag => (
+                  <span key={tag} className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-mono text-neutral-300">{tag}</span>
+                ))}
+              </div>
+            </Reveal>
+
+            <Reveal delay={200} className="bg-[#020202] border border-white/5 p-8 md:p-12 rounded-[1.5rem]">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-16 h-16 bg-orange-500/10 rounded-full flex items-center justify-center border border-orange-500/30 text-orange-500 font-bold text-xl">MJ</div>
+                <div>
+                  <h3 className="text-2xl text-white font-bold" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Mamta Junnarkar</h3>
+                  <p className="text-orange-500 font-mono text-xs tracking-widest uppercase">Operations Director</p>
+                </div>
+              </div>
+              <p className="text-neutral-400 leading-relaxed mb-6">Over 24 years of experience in Operational Strategy, Risk Control, Compliance, and BFSI IT domains. Mamta ensures that our engineering efforts are perfectly aligned with stringent budget controls, workforce optimization, and global delivery standards.</p>
+              <div className="flex flex-wrap gap-2">
+                {['Operational Strategy', 'Risk Control', 'Financial Analytics'].map(tag => (
+                  <span key={tag} className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-mono text-neutral-300">{tag}</span>
+                ))}
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+const ServicesPage = () => {
+  return (
+    <div className="min-h-screen bg-[#020202]">
+      <PageHero subtitle="Capabilities" title="The Enterprise Technology Stack" />
+      
+      <section className="py-24 px-[3%]">
+        <div className="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+          {SERVICES.map((srv, i) => (
+            <Reveal key={srv.id} delay={i * 100} className="group bg-[#050505] border border-white/5 p-8 rounded-[1.5rem] hover:border-orange-500/30 hover:shadow-[0_0_30px_rgba(249,115,22,0.1)] transition-all duration-500 flex flex-col">
+              <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-orange-500 mb-6 border border-white/10 group-hover:bg-orange-500 group-hover:text-white transition-colors">
+                {srv.icon}
+              </div>
+              <h3 className="text-2xl text-white font-bold mb-3" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>{srv.title}</h3>
+              <p className="text-neutral-400 leading-relaxed mb-6 flex-grow">{srv.desc}</p>
+              <div className="pt-6 border-t border-white/5 mt-auto flex items-center text-sm font-mono text-orange-500 tracking-widest uppercase font-bold cursor-pointer group-hover:text-orange-400">
+                Deploy Service <ArrowRight size={14} className="ml-2 transform group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+};
+
+const IndustriesPage = () => {
+  return (
+    <div className="min-h-screen bg-[#020202]">
+      <PageHero subtitle="Sectors" title="Tailored Infrastructure for Complex Industries." />
+      
+      <section className="py-24 px-[3%] relative">
+        <div className="absolute top-0 right-0 w-[40vw] h-[40vw] bg-orange-600/5 blur-[120px] rounded-full pointer-events-none" />
+        
+        <div className="max-w-[1000px] mx-auto flex flex-col gap-12 relative z-10">
+          {INDUSTRIES.map((ind, i) => (
+            <Reveal key={ind.id} delay={i * 100} className="flex flex-col md:flex-row gap-8 bg-[#050505] p-8 md:p-12 rounded-[1.5rem] border border-white/5 hover:border-white/10 transition-colors">
+              <div className="md:w-1/3">
+                <div className="text-orange-500 font-mono text-xs tracking-widest uppercase mb-2">0{i+1}</div>
+                <h3 className="text-3xl text-white font-bold" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>{ind.title}</h3>
+              </div>
+              <div className="md:w-2/3">
+                <p className="text-neutral-400 text-lg leading-relaxed mb-6">{ind.desc}</p>
+                <div className="flex flex-wrap gap-2">
+                  <span className="px-3 py-1 bg-[#020202] border border-white/5 rounded text-xs font-mono text-neutral-500 uppercase">Cloud Migration</span>
+                  <span className="px-3 py-1 bg-[#020202] border border-white/5 rounded text-xs font-mono text-neutral-500 uppercase">Zero-Trust</span>
+                  <span className="px-3 py-1 bg-[#020202] border border-white/5 rounded text-xs font-mono text-neutral-500 uppercase">Data Analytics</span>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+};
+
+const ContactPage = () => {
+  return (
+    <div className="min-h-screen bg-[#020202]">
+      <PageHero subtitle="Initialize" title="Start a Conversation." />
+      
+      <section className="py-24 px-[3%]">
+        <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
+          
+          <Reveal>
+            <h3 className="text-2xl text-white font-bold mb-8" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Global Offices</h3>
+            
+            <div className="flex flex-col gap-8 mb-12">
+              <div className="flex gap-6 bg-[#050505] p-6 rounded-[1rem] border border-white/5">
+                <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center shrink-0 border border-white/10 text-orange-500">
+                  <MapPin size={20} />
+                </div>
+                <div>
+                  <h4 className="text-white font-bold font-mono text-sm tracking-widest uppercase mb-2">India Headquarters</h4>
+                  <p className="text-neutral-400 text-sm leading-relaxed">C-329, City Plaza, Chakan<br/>Pune, Maharashtra - 410501</p>
+                </div>
+              </div>
+
+              <div className="flex gap-6 bg-[#050505] p-6 rounded-[1rem] border border-white/5">
+                <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center shrink-0 border border-white/10 text-orange-500">
+                  <Globe2 size={20} />
+                </div>
+                <div>
+                  <h4 className="text-white font-bold font-mono text-sm tracking-widest uppercase mb-2">US Operations</h4>
+                  <p className="text-neutral-400 text-sm leading-relaxed">530 E HALL ST<br/>SAVANNAH, GA 31401-5856</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <a href="tel:+919561825252" className="flex items-center gap-4 text-neutral-400 hover:text-white transition-colors">
+                <Phone size={18} className="text-orange-500" /> +91 95618 25252
+              </a>
+              <a href="mailto:sys@technimation.io" className="flex items-center gap-4 text-neutral-400 hover:text-white transition-colors">
+                <Mail size={18} className="text-orange-500" /> sys@technimation.io
+              </a>
+            </div>
+          </Reveal>
+
+          <Reveal delay={200} className="bg-[#050505] p-8 md:p-12 rounded-[1.5rem] border border-white/5">
+            <h3 className="text-2xl text-white font-bold mb-8" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>System Inquiry</h3>
+            <form className="flex flex-col gap-6" onSubmit={(e) => e.preventDefault()}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-mono text-neutral-500 uppercase tracking-widest">First Name</label>
+                  <input type="text" className="bg-[#020202] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors" />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-mono text-neutral-500 uppercase tracking-widest">Last Name</label>
+                  <input type="text" className="bg-[#020202] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors" />
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-mono text-neutral-500 uppercase tracking-widest">Corporate Email</label>
+                <input type="email" className="bg-[#020202] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-mono text-neutral-500 uppercase tracking-widest">Interest Area</label>
+                <select className="bg-[#020202] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors appearance-none">
+                  <option>Cloud Migration</option>
+                  <option>Cybersecurity</option>
+                  <option>Custom Engineering</option>
+                  <option>IT Advisory</option>
+                </select>
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-mono text-neutral-500 uppercase tracking-widest">Message</label>
+                <textarea rows={4} className="bg-[#020202] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors resize-none" />
+              </div>
+              <Button className="w-full mt-4 !bg-orange-500 hover:!bg-orange-600 !text-white !border-transparent">Submit Request</Button>
+            </form>
+          </Reveal>
+
+        </div>
+      </section>
+    </div>
+  );
+};
+
+
+// --- HOME PAGE & APP ROUTER ---
 
 const HomePage = ({ navigate, isAppReady }) => {
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
@@ -759,15 +1108,26 @@ const HomePage = ({ navigate, isAppReady }) => {
     return () => clearInterval(interval);
   }, [isAppReady]);
 
+  // OPTIMIZED MOUSE LOOP
   useEffect(() => {
     let req;
     const loop = () => {
-      mousePos.current.x += (targetMouse.current.x - mousePos.current.x) * 0.15;
-      mousePos.current.y += (targetMouse.current.y - mousePos.current.y) * 0.15;
-      if (heroRef.current) {
-        heroRef.current.style.setProperty('--mouse-x', `${mousePos.current.x}%`);
-        heroRef.current.style.setProperty('--mouse-y', `${mousePos.current.y}%`);
+      // Calculate difference between target and current position
+      const diffX = Math.abs(targetMouse.current.x - mousePos.current.x);
+      const diffY = Math.abs(targetMouse.current.y - mousePos.current.y);
+      
+      // ONLY update the DOM if the mouse has actually moved significantly.
+      // This stops continuous CSS repaints when the mouse is idle (e.g. while interacting with the menu).
+      if (diffX > 0.1 || diffY > 0.1) {
+        mousePos.current.x += (targetMouse.current.x - mousePos.current.x) * 0.15;
+        mousePos.current.y += (targetMouse.current.y - mousePos.current.y) * 0.15;
+        
+        if (heroRef.current) {
+          heroRef.current.style.setProperty('--mouse-x', `${mousePos.current.x}%`);
+          heroRef.current.style.setProperty('--mouse-y', `${mousePos.current.y}%`);
+        }
       }
+      
       req = requestAnimationFrame(loop);
     };
     loop();
@@ -786,12 +1146,7 @@ const HomePage = ({ navigate, isAppReady }) => {
   return (
     <div className="w-full relative">
       
-      {/* 
-        THE STICKY CURTAIN REVEAL:
-        This section is fixed to the background. As you scroll down the page,
-        the rest of the content (which has a solid background and starts 100vh down)
-        will slide up and beautifully cover it.
-      */}
+      {/* THE STICKY CURTAIN REVEAL */}
       <section 
         className="fixed top-0 left-0 w-full h-[100dvh] flex flex-col items-center justify-center overflow-hidden bg-[#020202] z-0" 
         onMouseMove={handleMouseMove} 
@@ -854,7 +1209,8 @@ const HomePage = ({ navigate, isAppReady }) => {
                       {item.desc}
                     </p>
                     <div className={`flex flex-col sm:flex-row gap-4 justify-center opacity-0 transition-all duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${isActive ? 'translate-y-0 scale-100' : 'translate-y-8 scale-95'}`} style={{ transitionDelay: isActive ? '400ms' : '0ms' }}>
-                      <Button>{item.btnPrimary}</Button><Button variant="secondary">{item.btnSecondary}</Button>
+                      <Button onClick={() => navigate('services')}>{item.btnPrimary}</Button>
+                      <Button variant="secondary" onClick={() => navigate('contact')}>{item.btnSecondary}</Button>
                     </div>
                   </div>
                 );
@@ -864,11 +1220,7 @@ const HomePage = ({ navigate, isAppReady }) => {
         </div>
       </section>
 
-      {/* 
-        THE SCROLLABLE CONTENT:
-        This container holds everything below the hero. It has a top margin of 100dvh
-        to push it below the screen initially. As you scroll, it perfectly covers the fixed hero.
-      */}
+      {/* THE SCROLLABLE CONTENT */}
       <div className="relative z-10 mt-[100dvh] w-full bg-[#020202] flex flex-col shadow-[0_-20px_50px_rgba(0,0,0,0.8)] border-t border-white/5">
         <ManifestoSection />
         <PartnerMarqueeSection />
@@ -879,10 +1231,10 @@ const HomePage = ({ navigate, isAppReady }) => {
         <EngagementsSection />
         <ProcessSection />
         <PreFooterCTA />
-        <DetailedFooter />
-      </div>
+        <DetailedFooter navigate={navigate} />
     </div>
-  );
+  </div>
+);
 };
 
 export default function App() {
@@ -890,12 +1242,28 @@ export default function App() {
   const [isAppReady, setIsAppReady] = useState(false);
   const [isPreloaderMounted, setIsPreloaderMounted] = useState(true);
 
+  const navigate = (page) => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    setCurrentPage(page);
+  };
+
   useEffect(() => {
     const link = document.createElement('link');
     link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap';
     link.rel = 'stylesheet';
     document.head.appendChild(link);
   }, []);
+
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'home': return <HomePage navigate={navigate} isAppReady={isAppReady} />;
+      case 'about': return <AboutPage navigate={navigate} />;
+      case 'services': return <ServicesPage navigate={navigate} />;
+      case 'industries': return <IndustriesPage navigate={navigate} />;
+      case 'contact': return <ContactPage navigate={navigate} />;
+      default: return <HomePage navigate={navigate} isAppReady={isAppReady} />;
+    }
+  };
 
   return (
     <div className="bg-[#020202] text-slate-300 min-h-screen w-full font-sans selection:bg-orange-500 selection:text-white" style={{ fontFamily: '"Inter", sans-serif' }}>
@@ -934,7 +1302,11 @@ export default function App() {
       {isPreloaderMounted && <Preloader onAppReady={() => setIsAppReady(true)} onComplete={() => setIsPreloaderMounted(false)} />}
       <Header navigate={setCurrentPage} currentPage={currentPage} isAppReady={isAppReady} />
       <main className="w-full relative">
-        <HomePage navigate={setCurrentPage} isAppReady={isAppReady} />
+        {currentPage === 'home' && <HomePage navigate={setCurrentPage} isAppReady={isAppReady} />}
+        {currentPage === 'about' && <AboutPage navigate={setCurrentPage} />}
+        {currentPage === 'services' && <ServicesPage navigate={setCurrentPage} />}
+        {currentPage === 'industries' && <IndustriesPage navigate={setCurrentPage} />}
+        {currentPage === 'contact' && <ContactPage navigate={setCurrentPage} />}
       </main>
     </div>
   );
